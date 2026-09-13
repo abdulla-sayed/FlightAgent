@@ -1,0 +1,19 @@
+# this is like the package.json but for a python project in uv
+[project]
+name = "agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+# uv add:
+# Updates pyproject.toml
+# Resolves the dependency
+# Updates uv.lock
+# Makes the dependency available to the project environment
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
