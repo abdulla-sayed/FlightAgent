@@ -9,25 +9,28 @@ datasource db {
 }
 
 model Flight {
-  id             String    @id @default(cuid())
-  number         String    @unique
-  origin         Airport   @relation("OriginFlight", fields: [originId], references: [code])
-  originId       String
-  destination    Airport   @relation("DestinationFlight", fields: [destinationId], references: [code])
-  destinationId  String
-  deptTime       DateTime
-  arrivalTime    DateTime
-  price          Int
-  currency       String
-  totalSeats     Int
-  availableSeats Int
-  bookings       Booking[]
+  id            String    @id @default(cuid())
+  number        String    @unique
+  origin        Airport   @relation("OriginFlight", fields: [originId], references: [code])
+  originId      String
+  destination   Airport   @relation("DestinationFlight", fields: [destinationId], references: [code])
+  destinationId String
+  deptTime      DateTime
+  arrivalTime   DateTime
+  price         Int
+  currency      String
+  totalSeats    Int       @default(6) // each flight holds 6 seats, 1 -> 2, A -> C
+  bookings      Booking[]
+
+  // available seats is derivable, since the flight only has 6 seats, then remaining would 6 - count(bookings),
+  // no need to include it as a column since it would be redundant info.
+  @@index([originId, destinationId, deptTime])
 }
 
 model User {
   id       String    @id @default(cuid())
   name     String
-  passport String
+  passport String    @unique
   bookings Booking[]
 }
 
@@ -39,15 +42,15 @@ model Booking {
   flightId  String
   timestamp DateTime @default(now())
   seat      String   @db.VarChar(4)
+  reference String   @unique // 6 uppercase alphanumerics
 
   @@unique([flightId, seat])
 }
 
 model Airport {
-  code           String   @id
-  name           String   @unique
-  city           String
-  originAirports Flight[] @relation("OriginFlight")
-
-  destinationAirports Flight[] @relation("DestinationFlight")
+  code             String   @id
+  name             String   @unique
+  city             String
+  departingFlights Flight[] @relation("OriginFlight")
+  arrivingFlights  Flight[] @relation("DestinationFlight")
 }
