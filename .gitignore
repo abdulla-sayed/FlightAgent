@@ -69,6 +69,7 @@ coverage/
 .svelte-kit/
 .cache/
 .parcel-cache/
+__pycache__/
 
 # =====================
 # Docker
