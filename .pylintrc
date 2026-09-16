@@ -1,0 +1,18 @@
+[MAIN]
+# This file MUST stay at the repo root, not in agent/.
+#
+# Pylint only looks for its config in the *current working directory* -- not in
+# the directory of the file being linted. nvim-lint spawns pylint with nvim's
+# cwd, which is the repo root (this is a Next.js repo with the Python project
+# nested under agent/). A .pylintrc inside agent/ is never found, so none of
+# the below applies and every import fails with E0401.
+#
+# Don't "fix" this by setting nvim-lint's cwd instead: nvim-lint's pylint
+# parser compares pylint's reported path (relative to pylint's cwd) against the
+# buffer path (relative to nvim's cwd). Diverge the two and every diagnostic is
+# silently discarded.
+#
+# Mason's pylint runs from its own isolated venv, so it can't see this
+# project's packages. Splice this venv's site-packages (and src/) onto
+# sys.path so imports resolve.
+init-hook='import glob, sys; sys.path[:0] = glob.glob("/home/abood/dev/flightagent/agent/.venv/lib/python*/site-packages") + ["/home/abood/dev/flightagent/agent/src"]'
