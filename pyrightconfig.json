@@ -1,0 +1,18 @@
+{
+  "include": ["agent"],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "agent/.venv",
+    ".next",
+    "generated"
+  ],
+
+  "venvPath": "./agent",
+  "venv": ".venv",
+
+  "extraPaths": ["agent/src"],
+
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "standard"
+}
