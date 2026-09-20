@@ -22,7 +22,7 @@ model Flight {
   totalSeats    Int       @default(6) // each flight holds 6 seats, 1 -> 2, A -> C
   bookings      Booking[]
 
-  // available seats is derivable, since the flight only has 6 seats, then remaining would 6 - count(bookings),
+  // available seats is derivable, since the flight only has 6 seats, then remaining would be 6 - count(bookings),
   // no need to include it as a column since it would be redundant info.
   @@index([originId, destinationId, deptTime])
 }
