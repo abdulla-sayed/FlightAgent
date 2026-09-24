@@ -75,3 +75,14 @@ def passenger_mismatch_error(passenger_name: str, passport: str):
             ),
         },
     }
+
+
+def booking_not_found_error(reference: str):
+    return {
+        "ok": False,
+        "error": {
+            "code": "BOOKING_NOT_FOUND",
+            "input": {"reference": reference},
+            "message": "No booking found for the supplied reference and passport.",
+        },
+    }

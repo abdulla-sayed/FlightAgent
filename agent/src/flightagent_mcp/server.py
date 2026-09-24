@@ -7,6 +7,7 @@ from fastmcp import FastMCP
 from flightagent_mcp.flights.book_seat import (
     book_seat,
 )
+from flightagent_mcp.flights.get_booking import get_booking
 from flightagent_mcp.flights.seat_map import get_seat_map
 from flightagent_mcp.seats import SeatId
 
@@ -70,6 +71,22 @@ async def book_flight(
     """
     async with AsyncSession(engine) as session:
         return await book_seat(session, flight_number, seat, passenger_name, passport)
+
+
+@mcp.tool()
+async def read_booking(
+    reference: str,
+    passport: str,
+):
+    """Look up a booking using its reference and the passenger's passport.
+
+    The reference is case-insensitive. Returns the flight, seat, passenger,
+    price, booking timestamp, and departure time when both inputs match.
+    Returns a structured error when no matching booking is found.
+    """
+
+    async with AsyncSession(engine) as session:
+        return await get_booking(session, reference, passport)
 
 
 def main() -> None:
