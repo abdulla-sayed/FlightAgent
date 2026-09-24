@@ -172,6 +172,27 @@ async def airports_resource() -> list[dict]:
         ]
 
 
+@mcp.prompt()
+def book_flight_wizard(origin: str, destination: str) -> str:
+    """Start a guided flight booking from an origin to a destination."""
+    return (
+        f"Help me book a flight from {origin} to {destination}. "
+        "First ask me for my travel date. Then help me choose a flight "
+        "and an available seat. Ask for my passenger name and passport "
+        "before making the booking."
+    )
+
+
+@mcp.prompt()
+def check_my_booking(reference: str) -> str:
+    """Start a booking lookup using a reference."""
+    return (
+        f"Help me check booking reference {reference}. "
+        "Ask me for the passport associated with the booking, then "
+        "look it up using both the reference and passport."
+    )
+
+
 def main() -> None:
     transport = os.getenv("TRANSPORT_MODE", "stdio")
 
