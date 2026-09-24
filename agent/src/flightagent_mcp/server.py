@@ -10,10 +10,12 @@ from flightagent_mcp.flights.book_seat import (
 from flightagent_mcp.flights.get_booking import get_booking
 from flightagent_mcp.flights.seat_map import get_seat_map
 from flightagent_mcp.seats import SeatId
+from fastmcp.exceptions import ResourceError
 
 load_dotenv()
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
 
 from flightagent_mcp.db import engine
 from flightagent_mcp.flights.flights import (
@@ -89,6 +91,87 @@ async def read_booking(
         return await get_booking(session, reference, passport)
 
 
+@mcp.tool()
+def greet():
+    return "Hello world!"
+
+
+@mcp.resource("flightagent://policy/booking", mime_type="text/markdown")
+def booking_policy_resource() -> str:
+    """Booking, baggage, change, and refund policy for the simulation."""
+    return """# Flightagent booking policy
+
+
+## Baggage
+no baggage allowed bro.
+
+## Changes and refunds
+nah no refunds here tbh
+
+## Simulation Notice
+this is all a simulation you are not welcome here and why are you even using this thing? get a life
+"""
+
+
+@mcp.resource("flightagent://flights/{number}", mime_type="application/json")
+async def flight_resource(number: str) -> dict:
+    """List details of a specific flight using its number."""
+    async with AsyncSession(engine) as session:
+        flightQuery = text("""
+        SELECT
+            f."number",
+            f."originId",
+            f."destinationId",
+            f."deptTime",
+            f."arrivalTime",
+            f."price",
+            f."currency",
+            f."totalSeats"
+        FROM "Flight" AS f
+        WHERE f."number" = :number
+        """)
+
+        result = await session.execute(flightQuery, {"number": number})
+        flightResolved = result.mappings().first()
+
+        if not flightResolved:
+            raise ResourceError(f"Flight with number {number} does not exist.")
+        else:
+            return {
+                "number": flightResolved["number"],
+                "origin": flightResolved["originId"],
+                "destination": flightResolved["destinationId"],
+                "departure_time": flightResolved["deptTime"].isoformat() + "Z",
+                "arrival_time": flightResolved["arrivalTime"].isoformat() + "Z",
+                "price": flightResolved["price"],
+                "currency": flightResolved["currency"],
+                "total_seats": flightResolved["totalSeats"],
+            }
+
+
+@mcp.resource("flightagent://airports", mime_type="application/json")
+async def airports_resource() -> list[dict]:
+    """List the airports available in the flight simulation."""
+    async with AsyncSession(engine) as session:
+        airportQuery = text("""
+            SELECT "code", "name", "city"
+            FROM "Airport"
+            ORDER BY "city", "code"
+        """)
+
+        result = await session.execute(airportQuery)
+        airports = result.mappings().all()
+
+        return [
+            {
+                "code": airport["code"],
+                "name": airport["name"],
+                "city": airport["city"],
+            }
+            for airport in airports
+        ]
+
+
 def main() -> None:
     transport = os.getenv("TRANSPORT_MODE", "stdio")
 
@@ -103,11 +186,6 @@ def main() -> None:
             host="0.0.0.0",
             port=8001,  # this is just a placeholder for now, as it could collide with FastAPI later.
         )
-
-
-@mcp.tool()
-def greet():
-    return "Hello world!"
 
 
 if __name__ == "__main__":
