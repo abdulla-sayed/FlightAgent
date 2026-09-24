@@ -15,3 +15,17 @@ def unknown_airport_error(
             "available_cities": available_cities,
         },
     }
+
+
+def unknown_flight_error(field, flight_number):
+    return {
+        "ok": False,
+        "error": {
+            "code": "UNKNOWN_FLIGHT",
+            "field": field,
+            "input": flight_number,
+            "message": (
+                f"Unknown {field} '{flight_number}'. " "Use a valid flight number."
+            ),
+        },
+    }

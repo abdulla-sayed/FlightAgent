@@ -4,6 +4,8 @@ from typing import Literal
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 
+from flightagent_mcp.flights.seat_map import get_seat_map
+
 load_dotenv()
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,6 +38,18 @@ async def search_flights(
             destination=destination,
             date=date,
         )
+
+
+@mcp.tool()
+async def render_flight(flight_number: str):
+    """Show the seat map and available seats for a flight number.
+
+    Returns the ASCII seat map plus separate lists of available and taken
+    seat IDs. Returns a structured error if the flight number is unknown.
+    """
+
+    async with AsyncSession(engine) as session:
+        return await get_seat_map(session, flight_number)
 
 
 def main() -> None:
