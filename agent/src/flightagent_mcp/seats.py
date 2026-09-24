@@ -1,4 +1,8 @@
-SEAT_IDS = ("1A", "1B", "1C", "2A", "2B", "2C")
+from typing import Literal, TypeAlias
+
+SeatId: TypeAlias = Literal["1A", "1B", "1C", "2A", "2B", "2C"]
+
+SEAT_IDS: tuple[SeatId, ...] = ("1A", "1B", "1C", "2A", "2B", "2C")
 
 AVAILABLE_MARKER = "o"
 UNAVAILABLE_MARKER = "x"
