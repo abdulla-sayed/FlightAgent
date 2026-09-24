@@ -4,7 +4,11 @@ from typing import Literal
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 
+from flightagent_mcp.flights.book_seat import (
+    book_seat,
+)
 from flightagent_mcp.flights.seat_map import get_seat_map
+from flightagent_mcp.seats import SeatId
 
 load_dotenv()
 
@@ -50,6 +54,22 @@ async def render_flight(flight_number: str):
 
     async with AsyncSession(engine) as session:
         return await get_seat_map(session, flight_number)
+
+
+@mcp.tool()
+async def book_flight(
+    flight_number: str,
+    seat: SeatId,
+    passenger_name: str,
+    passport: str,
+):
+    """Book a seat for a passenger on a flight.
+
+    Returns the booking reference, flight, seat, and price on success.
+    Returns a structured error if the flight or seat cannot be booked.
+    """
+    async with AsyncSession(engine) as session:
+        return await book_seat(session, flight_number, seat, passenger_name, passport)
 
 
 def main() -> None:

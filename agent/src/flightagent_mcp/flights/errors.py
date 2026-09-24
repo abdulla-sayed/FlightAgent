@@ -1,3 +1,6 @@
+from flightagent_mcp.seats import SeatId
+
+
 def unknown_airport_error(
     field: str,
     airport_ref: str,
@@ -17,7 +20,7 @@ def unknown_airport_error(
     }
 
 
-def unknown_flight_error(field, flight_number):
+def unknown_flight_error(field: str, flight_number: str):
     return {
         "ok": False,
         "error": {
@@ -26,6 +29,49 @@ def unknown_flight_error(field, flight_number):
             "input": flight_number,
             "message": (
                 f"Unknown {field} '{flight_number}'. " "Use a valid flight number."
+            ),
+        },
+    }
+
+
+def flight_departed_error(flight_number: str):
+    return {
+        "ok": False,
+        "error": {
+            "code": "FLIGHT_DEPARTED",
+            "input": flight_number,
+            "message": (f"Flight {flight_number} has already departed."),
+        },
+    }
+
+
+def booked_seat_error(flight_number: str, seat: SeatId, available: list[str]):
+    return {
+        "ok": False,
+        "error": {
+            "code": "SEAT_TAKEN",
+            "input": {
+                "flight_number": flight_number,
+                "seat": seat,
+            },
+            "message": f"Seat {seat} on {flight_number} is already booked.",
+            "available": available,  # can be used by the agent to inform user
+        },
+    }
+
+
+def passenger_mismatch_error(passenger_name: str, passport: str):
+    return {
+        "ok": False,
+        "error": {
+            "code": "PASSENGER_DETAILS_MISMATCH",
+            "input": {
+                "passenger_name": passenger_name,
+                "passport": passport,
+            },
+            "message": (
+                "The passenger name does not match the "
+                "existing record for this passport."
             ),
         },
     }
