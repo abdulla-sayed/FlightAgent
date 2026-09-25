@@ -9,6 +9,7 @@ dependencies = [
     "asyncpg>=0.31.0",
     "cuid>=0.4",
     "fastmcp>=4.0.5",
+    "pydantic-ai>=2.50.0",
     "python-dotenv>=1.2.3",
     "sqlalchemy[asyncio]>=2.0.54",
 ]
