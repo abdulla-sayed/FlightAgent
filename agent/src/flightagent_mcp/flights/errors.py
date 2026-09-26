@@ -20,6 +20,19 @@ def unknown_airport_error(
     }
 
 
+def invalid_date_error(field: str, value: str, message: str | None = None):
+    return {
+        "ok": False,
+        "error": {
+            "code": "INVALID_DATE",
+            "field": field,
+            "input": value,
+            "message": message
+            or f"Invalid {field} '{value}'. Dates must be formatted as YYYY-MM-DD.",
+        },
+    }
+
+
 def unknown_flight_error(field: str, flight_number: str):
     return {
         "ok": False,

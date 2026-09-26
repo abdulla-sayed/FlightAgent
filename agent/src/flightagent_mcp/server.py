@@ -32,10 +32,22 @@ async def search_flights(
     origin: str,
     destination: str,
     date: str | None = None,
+    departs_after: str | None = None,
+    departs_before: str | None = None,
+    include_past: bool = False,
 ):
     """Search for flights by city name or IATA airport code.
 
-    Date should be formatted as YYYY-MM-DD.
+    All dates are formatted as YYYY-MM-DD. Date filters are optional:
+    - date: flights departing on that exact day.
+    - departs_after: flights departing on or after that day.
+    - departs_before: flights departing on or before that day.
+    Combine departs_after and departs_before for a range. Do not combine
+    them with date. With no date filters, all upcoming flights are returned.
+
+    Flights that have already departed are excluded unless include_past
+    is true. Returns the matching flights sorted by departure time, and a
+    count of 0 when nothing matches.
     """
 
     async with AsyncSession(engine) as session:
@@ -44,6 +56,9 @@ async def search_flights(
             origin=origin,
             destination=destination,
             date=date,
+            departs_after=departs_after,
+            departs_before=departs_before,
+            include_past=include_past,
         )
 
 
