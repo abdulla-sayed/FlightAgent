@@ -34,5 +34,5 @@ if ssl_mode:
 engine = create_async_engine(
     database_url,
     connect_args=connect_args,
-    echo=True,  # TODO: Useful during development; disable in prod
+    echo=True,
 )
